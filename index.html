@@ -42,6 +42,15 @@
       <nav class="popular-cities" aria-label="Popular cities">
         <ul id="popular-cities-list" class="chip-list" role="list"></ul>
       </nav>
+
+      <!-- Favourites -->
+      <section class="favourites" aria-label="Favourite cities">
+        <div class="fav-row">
+          <h3 class="fav-title">★ Favourites</h3>
+          <p id="favourites-empty" class="fav-empty">No favourites yet — tap the star on a loaded city.</p>
+        </div>
+        <ul id="favourites-list" class="chip-list fav-list" role="list"></ul>
+      </section>
     </section>
 
     <!-- Loading state -->
@@ -76,6 +85,7 @@
             <p id="weather-region" class="weather-region">—</p>
             <p id="weather-localtime" class="weather-localtime">—</p>
           </div>
+          <button id="fav-btn" class="fav-btn" type="button" aria-pressed="false" title="Add to favourites">☆</button>
           <div class="condition-info">
             <img id="weather-icon" class="weather-icon" src="" alt="" width="64" height="64" />
             <p id="weather-condition" class="weather-condition">—</p>

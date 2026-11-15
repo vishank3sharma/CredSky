@@ -61,6 +61,10 @@
     cmpCondition: document.getElementById('cmp-condition'),
     cmpConditionNote: document.getElementById('cmp-condition-note'),
     cmpFootnote: document.getElementById('cmp-footnote'),
+    // favourites
+    favBtn: document.getElementById('fav-btn'),
+    favList: document.getElementById('favourites-list'),
+    favEmpty: document.getElementById('favourites-empty'),
     secUpdated: document.getElementById('sec-updated'),
     // json viewer
     tabFormatted: document.getElementById('tab-formatted'),
@@ -322,6 +326,95 @@
     showStates('error');
   }
 
+  // ---------- Favourites (localStorage-backed) ----------
+  const FAV_KEY = 'skyc:favourites';
+  let memoryFavourites = null; // fallback when localStorage is unavailable
+
+  function getFavourites() {
+    try {
+      const raw = window.localStorage.getItem(FAV_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter(function (x) { return typeof x === 'string' && x.trim(); }) : [];
+    } catch (err) {
+      return Array.isArray(memoryFavourites) ? memoryFavourites : [];
+    }
+  }
+
+  function saveFavourites(list) {
+    memoryFavourites = list;
+    try { window.localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (err) { /* private mode etc. */ }
+  }
+
+  function isFavourite(city) {
+    const target = (city || '').trim().toLowerCase();
+    return getFavourites().some(function (c) { return c.toLowerCase() === target; });
+  }
+
+  function updateFavButton() {
+    const city = el.city.textContent;
+    const fav = isFavourite(city) && city && city !== '—';
+    el.favBtn.textContent = fav ? '★' : '☆';
+    el.favBtn.classList.toggle('is-fav', fav);
+    el.favBtn.setAttribute('aria-pressed', String(fav));
+    el.favBtn.setAttribute('aria-label',
+      (fav ? 'Remove ' : 'Add ') + (city || 'city') + (fav ? ' from favourites' : ' to favourites'));
+  }
+
+  function toggleFavourite() {
+    const city = el.city.textContent.trim();
+    if (!city || city === '—') return;
+    const list = getFavourites();
+    const target = city.toLowerCase();
+    const index = list.findIndex(function (c) { return c.toLowerCase() === target; });
+    if (index >= 0) {
+      list.splice(index, 1);          // remove
+    } else {
+      list.unshift(city);             // add newest first
+    }
+    saveFavourites(list);
+    updateFavButton();
+    renderFavourites();
+  }
+
+  function removeFavourite(city) {
+    const target = (city || '').toLowerCase();
+    saveFavourites(getFavourites().filter(function (c) { return c.toLowerCase() !== target; }));
+    updateFavButton();
+    renderFavourites();
+  }
+
+  function renderFavourites() {
+    const list = getFavourites();
+    el.favList.textContent = '';
+    el.favEmpty.hidden = list.length > 0;
+
+    list.forEach(function (city) {
+      const li = document.createElement('li');
+      li.className = 'fav-chip';
+
+      const loadBtn = document.createElement('button');
+      loadBtn.type = 'button';
+      loadBtn.className = 'chip chip-fav-load';
+      loadBtn.textContent = city;
+      loadBtn.setAttribute('aria-label', 'Show weather for favourite city ' + city);
+      loadBtn.addEventListener('click', function () {
+        el.input.value = city;
+        loadWeather(city);
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'fav-remove';
+      removeBtn.textContent = '×';
+      removeBtn.setAttribute('aria-label', 'Remove ' + city + ' from favourites');
+      removeBtn.addEventListener('click', function () { removeFavourite(city); });
+
+      li.appendChild(loadBtn);
+      li.appendChild(removeBtn);
+      el.favList.appendChild(li);
+    });
+  }
+
   // ---------- Data flow ----------
   async function loadWeather(city) {
     // FR-02.4 — empty input must not trigger a request
@@ -346,6 +439,7 @@
       el.input.value = state.currentCity;        // FR-02: retain searched city
       markActiveChip(state.currentCity);         // FR-03.4
       renderWeather(payload);
+      updateFavButton();                         // favourites star reflects loaded city
       loadComparison(payload.data, requestId);   // vs-yesterday deltas (non-blocking)
     } catch (err) {
       if (err && err.name === 'AbortError') return;
@@ -400,6 +494,9 @@
     loadWeather(state.currentCity || config.DEFAULT_CITY);
   });
 
+  // Favourites events
+  el.favBtn.addEventListener('click', toggleFavourite);
+
   // JSON tabs (FR-07.3)
   function setJsonMode(mode) {
     state.jsonMode = mode;
@@ -448,6 +545,7 @@
   // ---------- Initialization (FR-01) ----------
   function init() {
     buildChips();
+    renderFavourites();
     el.input.value = config.DEFAULT_CITY;
     showStates('none');
     loadWeather(config.DEFAULT_CITY);
