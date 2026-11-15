@@ -1,21 +1,27 @@
 /* ============================================================
    SKY CRED — style.css
-   Dark sky theme, glassy cards, responsive down to mobile.
+   Daylight "sky" theme: blue-sky gradient backdrop, glassy
+   white cards, deep-navy text. Responsive down to mobile.
    ============================================================ */
 
 :root {
-  --bg-1: #0b1026;
-  --bg-2: #131b3a;
-  --bg-3: #1b2a4e;
-  --card: rgba(255, 255, 255, 0.06);
-  --card-strong: rgba(255, 255, 255, 0.10);
-  --border: rgba(255, 255, 255, 0.12);
-  --text: #eef2ff;
-  --text-dim: #9aa7c7;
-  --accent: #ffd166;
-  --accent-2: #6ea8ff;
-  --danger: #ff7b7b;
-  --ok: #7ee2a8;
+  /* Sky palette */
+  --sky-top: #1a7fd4;      /* deep sky blue */
+  --sky-mid: #4da6e8;      /* mid sky blue */
+  --sky-low: #9ed2f2;      /* light sky */
+  --sky-horizon: #d9effc;  /* pale horizon haze */
+
+  --card: rgba(255, 255, 255, 0.55);
+  --card-strong: rgba(255, 255, 255, 0.72);
+  --border: rgba(255, 255, 255, 0.75);
+  --border-soft: rgba(12, 45, 77, 0.10);
+
+  --text: #0c2d4d;         /* deep navy */
+  --text-dim: #3d5a75;
+  --accent: #f5a623;       /* sun */
+  --accent-2: #1d72c2;     /* deep sky blue for interactive elements */
+  --danger: #b4232a;
+  --ok: #0f7b4f;
   --radius: 16px;
   --max-width: 760px;
   font-size: 16px;
@@ -32,10 +38,11 @@ html, body {
 body {
   font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(1100px 500px at 15% -10%, rgba(110, 168, 255, 0.22), transparent 60%),
-    radial-gradient(900px 450px at 110% 10%, rgba(255, 209, 102, 0.14), transparent 55%),
-    linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+  background: linear-gradient(180deg,
+    var(--sky-top) 0%,
+    var(--sky-mid) 30%,
+    var(--sky-low) 65%,
+    var(--sky-horizon) 100%);
   background-attachment: fixed;
   line-height: 1.5;
   overflow-x: hidden;
@@ -68,10 +75,8 @@ body {
 
 .brand-badge {
   font-size: 1.6rem;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
+  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.45);
 }
 
 .brand-name {
@@ -79,14 +84,18 @@ body {
   font-size: 1.9rem;
   letter-spacing: 3px;
   font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(6, 48, 90, 0.45);
 }
 
 .brand-accent { color: var(--accent); }
 
 .tagline {
   margin: 6px 0 0;
-  color: var(--text-dim);
+  color: #ffffff;
+  opacity: 0.95;
   font-size: 0.95rem;
+  text-shadow: 0 1px 6px rgba(6, 48, 90, 0.4);
 }
 
 /* ---------- Search ---------- */
@@ -96,17 +105,21 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--card);
+  background: var(--card-strong);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 6px 6px 6px 18px;
-  backdrop-filter: blur(8px);
-  transition: border-color 0.2s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(6, 48, 90, 0.18);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.search-box:focus-within { border-color: var(--accent-2); }
+.search-box:focus-within {
+  border-color: var(--accent-2);
+  box-shadow: 0 8px 28px rgba(6, 48, 90, 0.28);
+}
 
-.search-icon { font-size: 1rem; opacity: 0.75; }
+.search-icon { font-size: 1rem; opacity: 0.7; }
 
 #city-input {
   flex: 1;
@@ -119,7 +132,7 @@ body {
   padding: 10px 0;
 }
 
-#city-input::placeholder { color: var(--text-dim); }
+#city-input::placeholder { color: var(--text-dim); opacity: 0.8; }
 
 .btn-search {
   border: 0;
@@ -127,9 +140,10 @@ body {
   padding: 10px 22px;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #10142a;
-  background: linear-gradient(135deg, var(--accent), #ffb347);
+  color: #3a2a00;
+  background: linear-gradient(135deg, #ffd166, #ffb347);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.35);
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
@@ -141,7 +155,8 @@ body {
   min-height: 1.2em;
   margin: 8px 4px 0;
   font-size: 0.85rem;
-  color: var(--danger);
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(120, 20, 20, 0.55);
 }
 
 /* ---------- Popular cities ---------- */
@@ -158,21 +173,23 @@ body {
 .chip {
   border: 1px solid var(--border);
   background: var(--card);
-  color: var(--text-dim);
+  color: var(--text);
   border-radius: 999px;
   padding: 7px 15px;
   font-size: 0.88rem;
   cursor: pointer;
+  backdrop-filter: blur(8px);
   transition: all 0.18s ease;
 }
 
-.chip:hover { color: var(--text); border-color: var(--accent-2); }
+.chip:hover { border-color: var(--accent-2); box-shadow: 0 3px 10px rgba(6, 48, 90, 0.2); }
 
 .chip.is-active {
-  background: linear-gradient(135deg, rgba(110, 168, 255, 0.28), rgba(255, 209, 102, 0.22));
-  color: var(--text);
-  border-color: var(--accent-2);
+  background: linear-gradient(135deg, var(--accent-2), #2f9bd6);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
+  box-shadow: 0 4px 14px rgba(13, 71, 129, 0.4);
 }
 
 /* ---------- Weather card ---------- */
@@ -181,7 +198,8 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px rgba(6, 48, 90, 0.22);
 }
 
 .weather-card-top {
@@ -191,7 +209,7 @@ body {
   flex-wrap: wrap;
 }
 
-.weather-city { margin: 0; font-size: 1.6rem; font-weight: 800; }
+.weather-city { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--text); }
 .weather-region { margin: 2px 0 0; color: var(--text-dim); font-size: 0.95rem; }
 .weather-localtime { margin: 6px 0 0; color: var(--accent-2); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
 
@@ -207,7 +225,7 @@ body {
   flex-wrap: wrap;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-soft);
 }
 
 .temp-block { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
@@ -216,6 +234,7 @@ body {
   font-size: 4rem;
   font-weight: 800;
   line-height: 1;
+  color: var(--accent-2);
   font-variant-numeric: tabular-nums;
 }
 
@@ -226,7 +245,7 @@ body {
 .cred-block {
   flex: 1 1 260px;
   max-width: 340px;
-  background: linear-gradient(150deg, rgba(110, 168, 255, 0.16), rgba(255, 209, 102, 0.10));
+  background: linear-gradient(150deg, rgba(77, 166, 232, 0.25), rgba(255, 255, 255, 0.35));
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px 16px;
@@ -244,13 +263,13 @@ body {
   margin: 2px 0 0;
   font-size: 2rem;
   font-weight: 800;
-  color: var(--accent);
+  color: #e08900;
   font-variant-numeric: tabular-nums;
 }
 
 .cred-title { margin: 4px 0 0; font-size: 1rem; font-weight: 700; }
 .cred-description { margin: 4px 0 0; color: var(--text-dim); font-size: 0.88rem; }
-.cred-disclaimer { margin: 8px 0 0; font-size: 0.68rem; color: var(--text-dim); opacity: 0.8; }
+.cred-disclaimer { margin: 8px 0 0; font-size: 0.68rem; color: var(--text-dim); opacity: 0.85; }
 
 /* ---------- Metric cards ---------- */
 .metric-cards {
@@ -266,6 +285,8 @@ body {
   border-radius: var(--radius);
   padding: 16px;
   text-align: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 22px rgba(6, 48, 90, 0.14);
 }
 
 .metric-label { margin: 0; color: var(--text-dim); font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; }
@@ -274,6 +295,7 @@ body {
   margin: 8px 0 0;
   font-size: 1.7rem;
   font-weight: 800;
+  color: var(--accent-2);
   font-variant-numeric: tabular-nums;
 }
 
@@ -287,6 +309,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 8px 16px;
+  backdrop-filter: blur(8px);
 }
 
 .secondary-grid {
@@ -311,10 +334,11 @@ body {
 /* ---------- JSON viewer ---------- */
 .json-viewer {
   margin-top: 16px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border);
+  background: rgba(6, 36, 64, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius);
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .json-header {
@@ -322,18 +346,18 @@ body {
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   flex-wrap: wrap;
 }
 
-.json-title { margin: 0; font-size: 0.9rem; font-weight: 700; flex: 1; }
+.json-title { margin: 0; font-size: 0.9rem; font-weight: 700; flex: 1; color: #eaf4ff; }
 
 .json-tabs { display: flex; gap: 6px; }
 
 .json-tab {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   background: transparent;
-  color: var(--text-dim);
+  color: #bcd6ef;
   border-radius: 8px;
   padding: 5px 12px;
   font-size: 0.8rem;
@@ -342,16 +366,16 @@ body {
 }
 
 .json-tab.is-active {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
-  color: #10142a;
+  background: var(--sky-mid);
+  border-color: var(--sky-mid);
+  color: #ffffff;
   font-weight: 700;
 }
 
 .btn-copy {
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   background: transparent;
-  color: var(--text);
+  color: #eaf4ff;
   border-radius: 8px;
   padding: 5px 14px;
   font-size: 0.8rem;
@@ -360,7 +384,7 @@ body {
 }
 
 .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
-.btn-copy.is-copied { border-color: var(--ok); color: var(--ok); }
+.btn-copy.is-copied { border-color: #59d9a2; color: #59d9a2; }
 
 .json-output {
   margin: 0;
@@ -370,7 +394,7 @@ body {
   font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
   font-size: 0.78rem;
   line-height: 1.5;
-  color: #b9c7ec;
+  color: #b9d4ec;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -380,7 +404,8 @@ body {
 
 .loading-text {
   text-align: center;
-  color: var(--text-dim);
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(6, 48, 90, 0.45);
   font-size: 0.9rem;
 }
 
@@ -388,7 +413,7 @@ body {
 
 .skeleton {
   border-radius: 8px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.07) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.07) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.30) 25%, rgba(255,255,255,0.60) 50%, rgba(255,255,255,0.30) 75%);
   background-size: 400px 100%;
   animation: shimmer 1.4s infinite linear;
 }
@@ -405,15 +430,16 @@ body {
 }
 
 .error-card {
-  background: rgba(255, 123, 123, 0.10);
-  border: 1px solid rgba(255, 123, 123, 0.35);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(180, 35, 42, 0.4);
   border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
+  box-shadow: 0 12px 32px rgba(6, 48, 90, 0.2);
 }
 
 .error-icon { font-size: 2rem; }
-.error-title { margin: 10px 0 0; font-size: 1.2rem; }
+.error-title { margin: 10px 0 0; font-size: 1.2rem; color: var(--danger); }
 .error-message { margin: 8px auto 16px; color: var(--text-dim); font-size: 0.92rem; max-width: 420px; }
 
 .btn-retry {
@@ -422,9 +448,10 @@ body {
   padding: 10px 28px;
   font-weight: 700;
   font-size: 0.9rem;
-  color: #10142a;
-  background: linear-gradient(135deg, var(--accent), #ffb347);
+  color: #3a2a00;
+  background: linear-gradient(135deg, #ffd166, #ffb347);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.35);
 }
 
 .btn-retry:hover { transform: translateY(-1px); }
@@ -433,11 +460,12 @@ body {
 .app-footer {
   margin-top: 30px;
   text-align: center;
-  color: var(--text-dim);
+  color: #ffffff;
   font-size: 0.8rem;
+  text-shadow: 0 1px 6px rgba(6, 48, 90, 0.4);
 }
 
-.app-footer a { color: var(--accent-2); text-decoration: none; }
+.app-footer a { color: #ffe08a; text-decoration: none; }
 .app-footer a:hover { text-decoration: underline; }
 
 /* ---------- Responsive ---------- */
