@@ -479,17 +479,17 @@
 
   // ---------- Popular cities (FR-03) ----------
   function buildChips() {
-    config.POPULAR_CITIES.forEach(function (city) {
+    config.POPULAR_CITIES.forEach(function (entry) {
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'chip';
-      btn.textContent = city;
-      btn.dataset.city = city;
-      btn.setAttribute('aria-label', 'Show weather for ' + city);
+      btn.textContent = entry.label;
+      btn.dataset.city = entry.query;
+      btn.setAttribute('aria-label', 'Show weather for ' + entry.label);
       btn.addEventListener('click', function () {
-        el.input.value = city;   // FR-03.3 — search sync
-        loadWeather(city);
+        el.input.value = entry.query;  // FR-03.3 — search sync
+        loadWeather(entry.query);
       });
       li.appendChild(btn);
       el.chipsList.appendChild(li);

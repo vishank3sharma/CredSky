@@ -6,9 +6,9 @@ A lightweight weather application that fetches live weather from [WeatherAPI.com
 
 ## Features
 
-- 🌆 **Default city (Mumbai)** loads automatically on launch
+- 🇮🇳 **Default city (Delhi, India)** loads automatically on launch
 - 🔍 **Search any city** — button click or Enter key
-- 🏙 **Popular city chips** — Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, New York, London
+- 🏙 **Popular city chips** — Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad (all pinned to India), New York, London
 - 🌡 **Live current conditions** — temperature (°C), condition icon, city-local time, feels-like
 - 🧮 **Weather personality** — application-generated score (0–100) + recommendation (Rain Check, Sun Alert, Perfect Day, …)
 - 💧 **Metric cards** — humidity, wind (km/h), UV index, AQI (US EPA) + secondary metrics (cloud, visibility, pressure, °F, PM2.5, last updated)

@@ -14,20 +14,21 @@ window.SKY_CRED_CONFIG = {
   // Free, keyless city-photo source (Wikimedia Commons search, CORS-enabled)
   WIKIMEDIA_API_URL: 'https://commons.wikimedia.org/w/api.php',
 
-  // FR-01.1 — Default city
-  DEFAULT_CITY: 'Mumbai',
+  // FR-01.1 — Default city (per product owner: Delhi, India)
+  DEFAULT_CITY: 'Delhi, India',
 
-  // FR-03 — Popular cities
+  // FR-03 — Popular cities (label shown, query sent; Indian cities are
+  // disambiguated because namesakes exist abroad, e.g. Delhi/Hyderabad)
   POPULAR_CITIES: [
-    'Mumbai',
-    'Delhi',
-    'Bengaluru',
-    'Hyderabad',
-    'Chennai',
-    'Kolkata',
-    'Pune',
-    'Ahmedabad',
-    'New York',
-    'London'
+    { label: 'Mumbai', query: 'Mumbai, India' },
+    { label: 'Delhi', query: 'Delhi, India' },
+    { label: 'Bengaluru', query: 'Bengaluru, India' },
+    { label: 'Hyderabad', query: 'Hyderabad, India' },
+    { label: 'Chennai', query: 'Chennai, India' },
+    { label: 'Kolkata', query: 'Kolkata, India' },
+    { label: 'Pune', query: 'Pune, India' },
+    { label: 'Ahmedabad', query: 'Ahmedabad, India' },
+    { label: 'New York', query: 'New York' },
+    { label: 'London', query: 'London' }
   ]
 };
