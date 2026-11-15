@@ -41,11 +41,14 @@
     metricWind: document.getElementById('metric-wind'),
     metricUv: document.getElementById('metric-uv'),
     uvNote: document.getElementById('uv-note'),
+    metricAqi: document.getElementById('metric-aqi'),
+    aqiNote: document.getElementById('aqi-note'),
     secCloud: document.getElementById('sec-cloud'),
     secVisibility: document.getElementById('sec-visibility'),
     secPressure: document.getElementById('sec-pressure'),
     secWind: document.getElementById('sec-wind'),
     secTempF: document.getElementById('sec-tempf'),
+    secPm25: document.getElementById('sec-pm25'),
     secUpdated: document.getElementById('sec-updated'),
     // json viewer
     tabFormatted: document.getElementById('tab-formatted'),
@@ -105,6 +108,20 @@
     return 'Extreme — avoid sun exposure';
   }
 
+  /** US EPA AQI index (1–6) → plain-language note. */
+  function aqiLabel(usEpaIndex) {
+    if (!Number.isInteger(usEpaIndex) || usEpaIndex < 1 || usEpaIndex > 6) return '—';
+    return [
+      '',                                   // index 0 unused
+      'Good — air quality is satisfactory',
+      'Moderate — acceptable for most people',
+      'Unhealthy for sensitive groups',
+      'Unhealthy — limit outdoor exertion',
+      'Very unhealthy — avoid outdoor activity',
+      'Hazardous — stay indoors if possible'
+    ][usEpaIndex];
+  }
+
   // ---------- Rendering ----------
   function renderWeather(payload) {
     const data = payload.data;
@@ -134,12 +151,19 @@
     el.metricUv.textContent = typeof current.uv === 'number' ? current.uv : '—';
     el.uvNote.textContent = uvLabel(current.uv);
 
+    // AQI (US EPA index) — only populated when the API returns air_quality data
+    const air = current.air_quality;
+    const usEpa = air && Number.isInteger(air['us-epa-index']) ? air['us-epa-index'] : null;
+    el.metricAqi.textContent = usEpa !== null ? String(usEpa) : '—';
+    el.aqiNote.textContent = aqiLabel(usEpa !== null ? usEpa : Number.NaN);
+
     // Secondary info (FR-06)
     el.secCloud.textContent = fmt(current.cloud, '%');
     el.secVisibility.textContent = fmtNumber(current.vis_km, 1, 'km');
     el.secPressure.textContent = fmtNumber(current.pressure_mb, 0, 'mb');
     el.secWind.textContent = typeof current.wind_kph === 'number' ? Math.round(current.wind_kph) + ' km/h' : '—';
     el.secTempF.textContent = typeof current.temp_f === 'number' ? Math.round(current.temp_f) + ' °F' : '—';
+    el.secPm25.textContent = air && typeof air.pm2_5 === 'number' ? air.pm2_5.toFixed(1) + ' µg/m³' : '—';
     el.secUpdated.textContent = current.last_updated || '—';
 
     // JSON viewer (FR-07) — always synced with the actual response

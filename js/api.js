@@ -33,7 +33,7 @@
       config.WEATHER_API_BASE_URL +
       '?key=' + encodeURIComponent(config.WEATHER_API_KEY) +
       '&q=' + encodeURIComponent(city) +
-      '&aqi=no';
+      '&aqi=yes';
 
     let response;
     try {

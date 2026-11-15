@@ -11,7 +11,7 @@ A lightweight weather application that fetches live weather from [WeatherAPI.com
 - 🏙 **Popular city chips** — Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, New York, London
 - 🌡 **Live current conditions** — temperature (°C), condition icon, city-local time, feels-like
 - 🧮 **Weather personality** — application-generated score (0–100) + recommendation (Rain Check, Sun Alert, Perfect Day, …)
-- 💧 **Metric cards** — humidity, wind (km/h), UV index + secondary metrics (cloud, visibility, pressure, °F, last updated)
+- 💧 **Metric cards** — humidity, wind (km/h), UV index, AQI (US EPA) + secondary metrics (cloud, visibility, pressure, °F, PM2.5, last updated)
 - 🧑‍💻 **API response viewer** — formatted/raw JSON tabs with copy-to-clipboard
 - 🛡 **Robust error handling** — validation, city not found, invalid key, rate limit, network & server errors, with Retry
 - 📱 **Responsive** — desktop, tablet and mobile (no horizontal overflow)
