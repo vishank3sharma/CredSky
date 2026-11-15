@@ -14,6 +14,7 @@ A lightweight weather application that fetches live weather from [WeatherAPI.com
 - 💧 **Metric cards** — humidity, wind (km/h), UV index, AQI (US EPA) + secondary metrics (cloud, visibility, pressure, °F, PM2.5, last updated)
 - 🧑‍💻 **API response viewer** — formatted/raw JSON tabs with copy-to-clipboard
 - 🔄 **Change vs Yesterday** — temperature, humidity, wind and sky-condition deltas against the same local hour yesterday
+- 🌆 **City photo backdrop** — a representative photo of the displayed city (Wikimedia Commons) fades in behind a light veil, keeping all text readable
 - 🛡 **Robust error handling** — validation, city not found, invalid key, rate limit, network & server errors, with Retry
 - 📱 **Responsive** — desktop, tablet and mobile (no horizontal overflow)
 - ♿ **Accessible** — labels, live regions, keyboard support

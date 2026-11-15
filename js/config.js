@@ -11,6 +11,9 @@ window.SKY_CRED_CONFIG = {
   WEATHER_API_BASE_URL: 'https://api.weatherapi.com/v1/current.json',
   WEATHER_HISTORY_BASE_URL: 'https://api.weatherapi.com/v1/history.json',
 
+  // Free, keyless city-photo source (Wikimedia Commons search, CORS-enabled)
+  WIKIMEDIA_API_URL: 'https://commons.wikimedia.org/w/api.php',
+
   // FR-01.1 — Default city
   DEFAULT_CITY: 'Mumbai',
 

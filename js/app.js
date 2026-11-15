@@ -65,6 +65,7 @@
     favBtn: document.getElementById('fav-btn'),
     favList: document.getElementById('favourites-list'),
     favEmpty: document.getElementById('favourites-empty'),
+    bgImage: document.getElementById('bg-image'),
     secUpdated: document.getElementById('sec-updated'),
     // json viewer
     tabFormatted: document.getElementById('tab-formatted'),
@@ -78,7 +79,8 @@
     currentCity: null,
     requestId: 0,          // guard against stale responses (FR-08)
     lastPayload: null,     // { data, rawText }
-    jsonMode: 'formatted'  // 'formatted' | 'raw'
+    jsonMode: 'formatted', // 'formatted' | 'raw'
+    bgCity: null           // city whose photo is currently in the backdrop
   };
 
   const ERROR_TITLES = {
@@ -415,6 +417,24 @@
     });
   }
 
+  // ---------- City photo backdrop (non-critical) ----------
+  /**
+   * Loads a photo of the displayed city behind a light veil.
+   * Never affects weather data; on failure the sky gradient stays.
+   */
+  async function applyCityBackground(location, requestId) {
+    const name = location && location.name;
+    if (!name || state.bgCity === name) return;
+
+    const url = await api.fetchCityImage(name);
+    if (requestId !== state.requestId) return; // stale — city changed meanwhile
+    if (!url) return;                          // keep gradient, try again next city
+
+    state.bgCity = name;
+    el.bgImage.style.backgroundImage = 'url("' + url.replace(/"/g, '%22') + '")';
+    el.bgImage.classList.add('is-visible');
+  }
+
   // ---------- Data flow ----------
   async function loadWeather(city) {
     // FR-02.4 — empty input must not trigger a request
@@ -441,6 +461,7 @@
       renderWeather(payload);
       updateFavButton();                         // favourites star reflects loaded city
       loadComparison(payload.data, requestId);   // vs-yesterday deltas (non-blocking)
+      applyCityBackground(payload.data.location, requestId); // city photo (non-blocking)
     } catch (err) {
       if (err && err.name === 'AbortError') return;
       if (requestId !== state.requestId) return; // stale error — ignore

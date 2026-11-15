@@ -64,6 +64,31 @@ body {
   padding: 28px 20px 40px;
 }
 
+/* ---------- City photo backdrop ---------- */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+/* Light white veil: photo stays visible but every text layer stays readable */
+.bg-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.50) 45%,
+    rgba(236, 246, 253, 0.62) 100%);
+}
+
+.bg-image.is-visible { opacity: 0.42; }
+
 /* ---------- Header ---------- */
 .app-header { text-align: center; margin-bottom: 22px; }
 
@@ -649,4 +674,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; }
   .btn-search, .btn-retry, .chip { transition: none; }
+  .bg-image { transition: none; }
 }

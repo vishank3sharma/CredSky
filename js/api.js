@@ -128,6 +128,43 @@
     return { status: response.status, data: body, rawText: rawText };
   }
 
+  /**
+   * Find a representative photo of a city on Wikimedia Commons.
+   * Non-critical enhancement: NEVER throws — resolves to null on any
+   * failure so the app keeps its plain sky gradient (FR-08).
+   * @returns {Promise<string|null>} Image URL or null
+   */
+  async function fetchCityImage(city) {
+    const queries = [city + ' skyline', city + ' cityscape', city];
+    for (const query of queries) {
+      try {
+        const url =
+          config.WIKIMEDIA_API_URL +
+          '?action=query&generator=search&gsrnamespace=6&gsrlimit=12' +
+          '&gsrsearch=' + encodeURIComponent(query) +
+          '&prop=imageinfo&iiprop=url%7Cmime%7Csize&iiurlwidth=1600' +
+          '&format=json&origin=*';
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (!resp.ok) continue;
+        const body = await resp.json();
+        const pages = body && body.query && body.query.pages
+          ? Object.values(body.query.pages) : [];
+        const usable = pages
+          .map(function (p) { return p && p.imageinfo && p.imageinfo[0]; })
+          .filter(function (info) {
+            return info && info.thumburl &&
+              (info.mime === 'image/jpeg' || info.mime === 'image/png') &&
+              info.width >= 800 && info.width >= info.height; // landscape only
+          })
+          .sort(function (a, b) { return b.width - a.width; });
+        if (usable.length) return usable[0].thumburl;
+      } catch (err) {
+        /* try next query / give up silently */
+      }
+    }
+    return null;
+  }
+
   function translateHttpError(status, apiError) {
     const code = apiError ? apiError.code : null;
     const apiMessage = apiError ? apiError.message : '';
@@ -164,6 +201,7 @@
   window.SKY_CRED_API = {
     fetchCurrentWeather: fetchCurrentWeather,
     fetchHistory: fetchHistory,
+    fetchCityImage: fetchCityImage,
     WeatherApiError: WeatherApiError
   };
 })();
