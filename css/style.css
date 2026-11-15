@@ -335,6 +335,68 @@ body {
 .secondary-label { color: var(--text-dim); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; }
 .secondary-value { font-weight: 700; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
 
+/* ---------- Change vs Yesterday ---------- */
+.compare-card {
+  margin-top: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 22px rgba(6, 48, 90, 0.14);
+}
+
+.compare-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.compare-title { margin: 0; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.5px; }
+
+.compare-date { color: var(--text-dim); font-size: 0.8rem; }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.compare-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.compare-label { color: var(--text-dim); font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; }
+
+.compare-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.compare-condition {
+  white-space: normal;
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.compare-note { color: var(--text-dim); font-size: 0.75rem; }
+
+.compare-value.is-up { color: #c2571b; }     /* warmer / stronger / more */
+.compare-value.is-down { color: #1d72c2; }   /* cooler / calmer / drier */
+.compare-value.is-same { color: var(--text-dim); }
+
+.compare-footnote {
+  margin: 10px 0 0;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+
 /* ---------- JSON viewer ---------- */
 .json-viewer {
   margin-top: 16px;
@@ -487,6 +549,7 @@ body {
   .metric-cards { grid-template-columns: 1fr; }
   .secondary-grid { grid-template-columns: repeat(2, 1fr); }
 
+  .compare-grid { grid-template-columns: repeat(2, 1fr); }
   .json-header { gap: 8px; }
 }
 

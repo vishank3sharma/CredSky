@@ -9,6 +9,7 @@ window.SKY_CRED_CONFIG = {
   WEATHER_API_KEY: 'abba2c2537104ed9a5095220261511',
 
   WEATHER_API_BASE_URL: 'https://api.weatherapi.com/v1/current.json',
+  WEATHER_HISTORY_BASE_URL: 'https://api.weatherapi.com/v1/history.json',
 
   // FR-01.1 — Default city
   DEFAULT_CITY: 'Mumbai',

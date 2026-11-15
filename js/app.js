@@ -49,6 +49,18 @@
     secWind: document.getElementById('sec-wind'),
     secTempF: document.getElementById('sec-tempf'),
     secPm25: document.getElementById('sec-pm25'),
+    // comparison
+    compareCard: document.getElementById('compare-card'),
+    cmpDate: document.getElementById('cmp-date'),
+    cmpTemp: document.getElementById('cmp-temp'),
+    cmpTempNote: document.getElementById('cmp-temp-note'),
+    cmpHumidity: document.getElementById('cmp-humidity'),
+    cmpHumidityNote: document.getElementById('cmp-humidity-note'),
+    cmpWind: document.getElementById('cmp-wind'),
+    cmpWindNote: document.getElementById('cmp-wind-note'),
+    cmpCondition: document.getElementById('cmp-condition'),
+    cmpConditionNote: document.getElementById('cmp-condition-note'),
+    cmpFootnote: document.getElementById('cmp-footnote'),
     secUpdated: document.getElementById('sec-updated'),
     // json viewer
     tabFormatted: document.getElementById('tab-formatted'),
@@ -120,6 +132,124 @@
       'Very unhealthy — avoid outdoor activity',
       'Hazardous — stay indoors if possible'
     ][usEpaIndex];
+  }
+
+  // ---------- "Change vs Yesterday" helpers ----------
+  /**
+   * Yesterday's date (YYYY-MM-DD) in the CITY's local calendar, derived
+   * from location.localtime ("YYYY-MM-DD HH:mm"). Manual math avoids
+   * timezone shifts from Date → ISO conversion.
+   */
+  function cityYesterdayDate(localtime) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(localtime || '');
+    if (!m) return null;
+    const dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]) - 1);
+    return dt.getFullYear() + '-' +
+      String(dt.getMonth() + 1).padStart(2, '0') + '-' +
+      String(dt.getDate()).padStart(2, '0');
+  }
+
+  function cityLocalHour(localtime) {
+    const m = /^\d{4}-\d{2}-\d{2} (\d{2}):/.exec(localtime || '');
+    return m ? Number(m[1]) : null;
+  }
+
+  function signed(value, decimals, unit) {
+    const s = (value > 0 ? '+' : '') + value.toFixed(decimals);
+    return unit ? s + unit : s;
+  }
+
+  function setDelta(node, noteNode, delta, unit, decimals, upWord, downWord, sameWord, sameThreshold) {
+    node.classList.remove('is-up', 'is-down', 'is-same');
+    let arrow, cls, word;
+    if (delta > sameThreshold)      { arrow = '▲ '; cls = 'is-up';   word = upWord; }
+    else if (delta < -sameThreshold){ arrow = '▼ '; cls = 'is-down'; word = downWord; }
+    else                            { arrow = '≈ '; cls = 'is-same'; word = sameWord; }
+    node.classList.add(cls);
+    node.textContent = arrow + signed(delta, decimals, unit);
+    noteNode.textContent = word;
+  }
+
+  function showCompare(visible) {
+    el.compareCard.hidden = !visible;
+  }
+
+  function resetCompare() {
+    el.cmpTemp.textContent = '…';   el.cmpTempNote.textContent = '';
+    el.cmpHumidity.textContent = '…'; el.cmpHumidityNote.textContent = '';
+    el.cmpWind.textContent = '…';   el.cmpWindNote.textContent = '';
+    el.cmpCondition.textContent = '…'; el.cmpConditionNote.textContent = '';
+    el.cmpFootnote.textContent = '';
+  }
+
+  /**
+   * Fetch yesterday's weather for the same location and render deltas.
+   * Non-critical: any failure hides the card without affecting the
+   * main weather display (FR-08 — valid data is never replaced).
+   */
+  async function loadComparison(data, requestId) {
+    const localtime = data.location && data.location.localtime;
+    const yesterdayDate = cityYesterdayDate(localtime);
+    if (!yesterdayDate || requestId !== state.requestId) return;
+
+    resetCompare();
+    showCompare(true);
+    el.cmpDate.textContent = 'compared with ' + yesterdayDate;
+
+    // Use exact coordinates so the history query resolves the same city
+    const q = data.location.lat + ',' + data.location.lon;
+
+    try {
+      const hist = await api.fetchHistory(q, yesterdayDate);
+      if (requestId !== state.requestId) return; // stale — ignore
+
+      const yesterday = hist.data.forecast.forecastday[0];
+      const hour = cityLocalHour(localtime);
+      const sameHour = yesterday.hour.find(function (h) {
+        return h.time && h.time.endsWith(' ' + String(hour).padStart(2, '0') + ':00');
+      }) || null;
+
+      const current = data.current;
+      const base = sameHour || { temp_c: yesterday.day.avgtemp_c, humidity: yesterday.day.avghumidity, wind_kph: null, condition: null };
+      const usedDayAvg = !sameHour;
+
+      setDelta(el.cmpTemp, el.cmpTempNote,
+        current.temp_c - base.temp_c, '°C', 1,
+        'Warmer', 'Cooler', 'About the same', 0.5);
+
+      if (typeof base.humidity === 'number' && typeof current.humidity === 'number') {
+        setDelta(el.cmpHumidity, el.cmpHumidityNote,
+          current.humidity - base.humidity, '%', 0,
+          'More humid', 'Drier', 'Similar humidity', 2);
+      } else {
+        el.cmpHumidity.textContent = '—'; el.cmpHumidityNote.textContent = 'Not available';
+      }
+
+      if (typeof base.wind_kph === 'number' && typeof current.wind_kph === 'number') {
+        setDelta(el.cmpWind, el.cmpWindNote,
+          current.wind_kph - base.wind_kph, ' km/h', 1,
+          'Stronger', 'Calmer', 'Similar wind', 2);
+      } else {
+        el.cmpWind.textContent = '—'; el.cmpWindNote.textContent = 'Not available';
+      }
+
+      const todayCond = current.condition ? current.condition.text : null;
+      const yestCond = base.condition ? base.condition.text : null;
+      if (todayCond && yestCond) {
+        el.cmpCondition.textContent = todayCond === yestCond ? 'Same' : yestCond + ' → ' + todayCond;
+        el.cmpConditionNote.textContent = todayCond === yestCond ? 'No change in skies' : 'Skies have changed';
+      } else {
+        el.cmpCondition.textContent = '—'; el.cmpConditionNote.textContent = 'Not available';
+      }
+
+      el.cmpFootnote.textContent = usedDayAvg
+        ? 'Hourly data unavailable for this hour — temperature compared with yesterday’s daily average.'
+        : 'Compared with yesterday at the same local hour (' + String(hour).padStart(2, '0') + ':00).';
+    } catch (err) {
+      // Comparison is optional — degrade silently, keep main weather intact
+      if (requestId !== state.requestId) return;
+      showCompare(false);
+    }
   }
 
   // ---------- Rendering ----------
@@ -216,6 +346,7 @@
       el.input.value = state.currentCity;        // FR-02: retain searched city
       markActiveChip(state.currentCity);         // FR-03.4
       renderWeather(payload);
+      loadComparison(payload.data, requestId);   // vs-yesterday deltas (non-blocking)
     } catch (err) {
       if (err && err.name === 'AbortError') return;
       if (requestId !== state.requestId) return; // stale error — ignore

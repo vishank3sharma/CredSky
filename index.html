@@ -135,6 +135,37 @@
         </ul>
       </section>
 
+      <!-- Change vs Yesterday -->
+      <section id="compare-card" class="compare-card" hidden aria-label="Change compared to yesterday">
+        <div class="compare-header">
+          <h3 class="compare-title">Change vs Yesterday</h3>
+          <span id="cmp-date" class="compare-date"></span>
+        </div>
+        <ul class="compare-grid" role="list">
+          <li class="compare-item">
+            <span class="compare-label">Temperature</span>
+            <span id="cmp-temp" class="compare-value">…</span>
+            <span id="cmp-temp-note" class="compare-note">…</span>
+          </li>
+          <li class="compare-item">
+            <span class="compare-label">Humidity</span>
+            <span id="cmp-humidity" class="compare-value">…</span>
+            <span id="cmp-humidity-note" class="compare-note">…</span>
+          </li>
+          <li class="compare-item">
+            <span class="compare-label">Wind</span>
+            <span id="cmp-wind" class="compare-value">…</span>
+            <span id="cmp-wind-note" class="compare-note">…</span>
+          </li>
+          <li class="compare-item">
+            <span class="compare-label">Condition</span>
+            <span id="cmp-condition" class="compare-value compare-condition">…</span>
+            <span id="cmp-condition-note" class="compare-note">…</span>
+          </li>
+        </ul>
+        <p id="cmp-footnote" class="compare-footnote"></p>
+      </section>
+
       <!-- API response viewer -->
       <section class="json-viewer" aria-label="API response viewer">
         <div class="json-header">

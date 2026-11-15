@@ -80,6 +80,54 @@
     return { status: response.status, data: body, rawText: rawText };
   }
 
+  /**
+   * Fetch historical weather for a city on a specific date (YYYY-MM-DD).
+   * Used by the "Change vs Yesterday" comparison (same lat/lon as the
+   * current-weather response so the resolved location cannot drift).
+   * @returns {Promise<{status:string, data:Object, rawText:string}>}
+   * @throws {WeatherApiError}
+   */
+  async function fetchHistory(city, date, signal) {
+    const url =
+      config.WEATHER_HISTORY_BASE_URL +
+      '?key=' + encodeURIComponent(config.WEATHER_API_KEY) +
+      '&q=' + encodeURIComponent(city) +
+      '&dt=' + encodeURIComponent(date);
+
+    let response;
+    try {
+      response = await fetch(url, { signal, cache: 'no-store' });
+    } catch (err) {
+      if (err && err.name === 'AbortError') throw err;
+      throw new WeatherApiError('network', 'Network connectivity issue.', true);
+    }
+
+    let rawText = '';
+    try {
+      rawText = await response.text();
+    } catch (err) {
+      throw new WeatherApiError('unexpected', 'Received an unreadable response from the weather service.', true);
+    }
+
+    let body = null;
+    try {
+      body = JSON.parse(rawText);
+    } catch (err) {
+      throw new WeatherApiError('unexpected', 'Received an unexpected response from the weather service.', true);
+    }
+
+    if (!response.ok || (body && body.error)) {
+      throw translateHttpError(response.status, body && body.error);
+    }
+
+    const days = body && body.forecast && body.forecast.forecastday;
+    if (!days || !days.length || !days[0].hour || !days[0].hour.length) {
+      throw new WeatherApiError('unexpected', 'No historical data available for this date.', false);
+    }
+
+    return { status: response.status, data: body, rawText: rawText };
+  }
+
   function translateHttpError(status, apiError) {
     const code = apiError ? apiError.code : null;
     const apiMessage = apiError ? apiError.message : '';
@@ -115,6 +163,7 @@
 
   window.SKY_CRED_API = {
     fetchCurrentWeather: fetchCurrentWeather,
+    fetchHistory: fetchHistory,
     WeatherApiError: WeatherApiError
   };
 })();
