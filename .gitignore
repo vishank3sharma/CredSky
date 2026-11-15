@@ -1,0 +1,4 @@
+# Local environment file (frontend key lives in js/config.js, which is public by design)
+.env
+.vercel
+.DS_Store
